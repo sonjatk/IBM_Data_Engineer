@@ -78,8 +78,8 @@ def writeHolidays(countries, country_holidays):
     with open('holidays.csv', mode='w', newline='') as csv_file:
         headers = ['ISO', 'Country', 'States', '2016', '2017', '2018', '2019', '2020', '2021', '2022']
         writer = csv.DictWriter(csv_file, fieldnames=headers)
-
         writer.writeheader()
+
         for c in country_holidays:
             holidays16 = [k for k in country_holidays[c][2016]]
             holidays17 = [k for k in country_holidays[c][2017]]
@@ -134,6 +134,7 @@ def writeSummary(nbr_holidays):
     with open('nbr_holidays.csv', mode='w', newline='') as csv_file:
         headers = ['ISO', '2016', '2017', '2018', '2019', '2020', '2021', '2022']
         writer = csv.DictWriter(csv_file, fieldnames=headers)
+        writer.writeheader()
 
         for c in nbr_holidays:
             writer.writerow({'ISO': c, '2016': nbr_holidays[c][0], '2017': nbr_holidays[c][1], '2018': nbr_holidays[c][2], '2019': nbr_holidays[c][3], '2020': nbr_holidays[c][4], '2021': nbr_holidays[c][5], '2022': nbr_holidays[c][6]})
