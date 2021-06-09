@@ -1,4 +1,3 @@
-from itertools import count
 import requests
 from bs4 import BeautifulSoup
 import holidays
@@ -6,12 +5,19 @@ from datetime import date
 import csv
 
 def webscrape():
+    """
+    Web scraping 3 character ISO and country name from holidays
+    documentation site
+
+    :return countries:  {3 character ISO: [Country, states]}
+    :type countries: dict
+
+    """
     url = 'https://pypi.org/project/holidays/'
     countries = {}
     r = requests.get(url)
 
     soup = BeautifulSoup(r.text, 'html.parser')
-
     iso_table = soup.find('table')
 
     for country in iso_table.find_all('tbody'):
@@ -40,6 +46,16 @@ def webscrape():
     return countries
 
 def getHolidays(countries):
+    """
+    Get holiday dates for years in range 2016-2022 for
+    supported countries
+
+    :param countries:
+    :type countries: dict
+    :return country_holidays:
+    :type country_holidays: dict
+
+    """
     country_holidays = {}
 
     for c in countries.keys():
@@ -51,6 +67,14 @@ def getHolidays(countries):
     return country_holidays
 
 def writeHolidays(countries, country_holidays):
+    """
+    Writes countries and their holidays to csv file holidays.csv
+
+    :param countries, country_holidays:
+    :type countries, country_holidays: dict
+
+    """
+
     with open('holidays.csv', mode='w', newline='') as csv_file:
         headers = ['ISO', 'Country', 'States', '2016', '2017', '2018', '2019', '2020', '2021', '2022']
         writer = csv.DictWriter(csv_file, fieldnames=headers)
@@ -68,12 +92,24 @@ def writeHolidays(countries, country_holidays):
             '2018': str(holidays18), '2019': str(holidays19), '2020': str(holidays20), '2021': str(holidays21), '2022': str(holidays22)})
 
 def summary(country_holidays):
+    """
+    Summary of number of holidays in each supported
+    country for each year in the range 2016-2022
+
+    :param country_holidays:
+    :type country_holidays: dict
+    :return nbr_holidays: {ISO: [2016, ..., 2022]
+    :type nbr_holidays: dict
+
+    """
+
     nbr_holidays = {}
     for c in country_holidays:
 
         if c != 'SWE' or c != 'NOR':
             nbr_holidays[c] = [len(country_holidays[c][2016]), len(country_holidays[c][2017]), len(country_holidays[c][2018]), len(country_holidays[c][2019]), len(country_holidays[c][2020]), len(country_holidays[c][2021]), len(country_holidays[c][2022])]
-        
+
+        # Remove regular Sundays from holidays count for Sweden and Norway
         if c == 'SWE' or c == 'NOR':
             nbr_holidays[c] = []
             for y in range(2016, 2022+1):
@@ -83,12 +119,18 @@ def summary(country_holidays):
                     if country_holidays[c][y].get(date_) == 'Söndag' or country_holidays[c][y].get(date_) == 'Søndag':
                         nbr_holidays_y -= 1
                 nbr_holidays[c].append(nbr_holidays_y)
-    
-    
 
     return nbr_holidays
 
 def writeSummary(nbr_holidays):
+    """
+    Writes summary of number of holidays to csv file nbr_holidays.csv
+
+    :param nbr_holidays:
+    :tye nbr_holidays: dict
+
+    """
+
     with open('nbr_holidays.csv', mode='w', newline='') as csv_file:
         headers = ['ISO', '2016', '2017', '2018', '2019', '2020', '2021', '2022']
         writer = csv.DictWriter(csv_file, fieldnames=headers)
@@ -104,6 +146,6 @@ def run():
     writeHolidays(countries, country_holidays)
     nbr_holidays = summary(country_holidays)
     writeSummary(nbr_holidays)
-    
+ 
 
 run()

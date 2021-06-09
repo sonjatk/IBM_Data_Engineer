@@ -26,7 +26,7 @@ def before_first_request():
     return countries
 
 @app.route('/')
-def hello_world():
+def hello():
     return """
         <html><body>
             <h1>Check for holiday</h1>
