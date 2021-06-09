@@ -1,0 +1,4 @@
+flask
+holidays
+bs4
+requests
